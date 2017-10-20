@@ -11,6 +11,7 @@ import './edit-stuff-page.html';
 import './edit-stuff-page.js';
 
 import './home-page.html';
+import './home-page.js';
 
 import './list-contacts-page.html';
 import './list-contacts-page.js';
