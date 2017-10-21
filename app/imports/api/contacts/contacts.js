@@ -6,38 +6,33 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 export const Contacts = new Mongo.Collection('Contacts');
 
 /**
- * Create the schema for Contacts
+ * Create the schema for Contact
  */
 export const ContactsSchema = new SimpleSchema({
   first: {
-    label: 'first',
+    label: 'First',
     type: String,
     optional: false,
-    max: 200,
   },
   last: {
-    label: 'last',
+    label: 'Last',
     type: String,
     optional: false,
-    max: 200,
   },
   address: {
-    label: 'address',
+    label: 'Address',
     type: String,
     optional: false,
-    max: 200,
   },
   telephone: {
-    label: 'telephone',
+    label: 'Telephone',
     type: String,
     optional: false,
-    max: 200,
   },
   email: {
-    label: 'email',
+    label: 'Email',
     type: String,
     optional: false,
-    max: 200,
   },
 });
 

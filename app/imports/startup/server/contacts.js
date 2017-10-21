@@ -5,18 +5,28 @@ import { _ } from 'meteor/underscore';
  * A list of Contacts to pre-fill the Collection.
  * @type {*[]}
  */
-const contactSeeds = [
-  { first: 'Tyler', last: 'Chong', address: '123 Sesame Street', telephone: '808-388-0313', email: 'johnson@hawaii.edu' },
-  { first: 'Danny', last: 'Weng', address: '123 Sesame Street', telephone: '808-388-0313', email: 'johnson@hawaii.edu' },
-  { first: 'Neel', last: 'Kotak', address: '123 Sesame Street', telephone: '808-388-0313', email: 'johnson@hawaii.edu' },
-  { first: 'Potato', last: 'Man', address: '123 Sesame Street', telephone: '808-388-0313', email: 'johnson@hawaii.edu' },
+const contactsList = [
+  {
+    first: 'Hello',
+    last: 'Kitty',
+    address: '1234 Abc Street',
+    telephone: '8081111111',
+    email: 'hello@bye.com',
+  },
+  {
+    first: 'Hi',
+    last: 'Kitty',
+    address: '1234 Def Street',
+    telephone: '8082222222',
+    email: 'hi@bye.com',
+  }
 ];
 
 /**
  * Initialize the Stuff collection if empty with seed data.
  */
 if (Contacts.find().count() === 0) {
-  _.each(contactSeeds, function contactStuffs(stuff) {
-    Contacts.insert(stuff);
+  _.each(contactsList, function (contact) {
+    Contacts.insert(contact);
   });
 }
