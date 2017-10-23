@@ -1,29 +1,61 @@
-import { AutoForm } from 'meteor/aldeed:autoform';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Template } from 'meteor/templating';
-import { Stuff } from '../../api/stuff/stuff.js';
+import { Tracker } from 'meteor/tracker';
+import { ReactiveDict } from 'meteor/reactive-dict';
+import { _ } from 'meteor/underscore';
+import { Contacts, ContactsSchema } from '../../api/contacts/contacts.js';
+import { FlowRouter } from 'meteor/kadira:flow-router';
 
-/* eslint-disable object-shorthand, no-unused-vars */
+/* eslint-disable no-param-reassign */
 
-/**
- * After successful addition of a new Stuff document, go to List page.
- * See: https://github.com/aldeed/meteor-autoform#callbackshooks
- */
-AutoForm.hooks({
-  AddStuffForm: {
-    /**
-     * After successful form submission, go to List_Stuff_Page.
-     * @param formType The form.
-     * @param result The result of form submission.
-     */
-    onSuccess: function onSuccess(formType, result) {
-      FlowRouter.go('List_Stuff_Page');
-    },
-  },
+const displayErrorMessages = 'displayErrorMessages';
+const createContext = ContactsSchema.namedContext('Edit_Contact_Page');
+
+Template.Edit_Contact_Page.onCreated(function onCreated() {
+  this.subscribe('Contacts');
+  this.messageFlags = new ReactiveDict();
+  this.messageFlags.set(displayErrorMessages, false);
+  this.context = ContactsSchema.namedContext('Edit_Contact_Page');
 });
 
-Template.Add_Stuff_Page.helpers({
-  stuffCollection() {
-    return Stuff;
+Template.Edit_Contact_Page.helpers({
+  contactDataField(fieldName) {
+    const contactData = Contacts.findOne(FlowRouter.getParam('_id'));
+    return contactData && contactData[fieldName];
+  },
+  errorClass() {
+    return Template.instance().messageFlags.get(displayErrorMessages) ? 'error' : '';
+  },
+  fieldError(fieldName) {
+    const invalidKeys = Template.instance().context.invalidKeys();
+    const errorObject = _.find(invalidKeys, (keyObj) => keyObj.name === fieldName);
+    return errorObject && Template.instance().context.keyErrorMessage(errorObject.name);
+  }
+});
+
+
+Template.Edit_Contact_Page.events({
+  'submit .contact-data-form'(event, instance) {
+    event.preventDefault();
+    // Get name (text field)
+    const first = event.target.First.value;
+    const last = event.target.Last.value;
+    const Editress = event.target.Address.value;
+    const telephone = event.target.Telephone.value;
+    const email = event.target.Email.value;
+
+    const updatedContactData = { first, last, address, telephone, email };
+    // Clear out any old validation errors.
+    instance.context.resetValidation();
+    // Invoke clean so that updatedContactData reflects what will be updated.
+    const cleanData = ContactsSchema.clean(updatedContactData);
+    // Determine validity.
+    instance.context.validate(cleanData);
+    if (instance.context.isValid()) {
+      Contacts.update(FlowRouter.getParam('_id'), { $set: cleanData });
+      instance.messageFlags.set(displayErrorMessages, false);
+      FlowRouter.go('Home_Page');
+    } else {
+      instance.messageFlags.set(displayErrorMessages, true);
+    }
   },
 });
